@@ -5,8 +5,40 @@ from django.db import models
 class User(AbstractUser):
     pass
 #Your application should have at least three models in addition to the User model: one for auction listings, one for bids, and one for comments made on auction listings. 
+class Category(models.Model):
+    name = models.CharField(max_length=30)
 
-#auction listings
-#bids
-#comments
+    def __str__(self):
+        return f"Category:{self.name}"
 #auction categories
+    
+class Auction(models.Model):
+    title=models.CharField(max_length=30)
+    description=models.CharField(max_length=130)
+    starting_bid=models.PositiveIntegerField()
+    image_url=models.URLField(blank=True)
+    #one to many category
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return f"Title:{self.title}, Description:{self.description}, with a starting bid of {self.starting_bid}, an image url of {self.image_url}, and category:{self.category}"
+#auction listings
+
+class Bids(models.Model):
+    auction = models.ForeignKey(Auction, on_delete=models.CASCADE)
+    bids=models.PositiveIntegerField()
+    user=models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Auction:{self.auction} and Bids:{self.bids} from User:{self.user}"
+#bids
+    
+class Comments(models.Model):
+    auction = models.ForeignKey(Auction, on_delete=models.CASCADE)
+    comments=models.CharField(max_length=130)
+    user=models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Auction:{self.auction} and Comments:{self.comments} from User:{self.user}"
+#comments
+
