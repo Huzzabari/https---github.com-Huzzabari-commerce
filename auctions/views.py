@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from .models import User, Category, Auction, Bids, Comments
+from .forms import AuctionForm
 
 
 def index(request):
@@ -63,6 +64,5 @@ def register(request):
 
 
 def create(request):
-    return render(request,"auctions/create.html", {
-        #"form": NewTaskForm()
-    })
+    form=AuctionForm()
+    return render(request,"auctions/create.html", {"form":form})
