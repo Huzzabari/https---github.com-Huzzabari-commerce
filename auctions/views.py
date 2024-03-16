@@ -8,7 +8,8 @@ from .forms import AuctionForm
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    return render(request, "auctions/index.html", {'auctions': Auction.objects.all()})
+    
 
 
 def login_view(request):
@@ -64,5 +65,13 @@ def register(request):
 
 
 def create(request):
+    if request.method=="POST":
+        form=AuctionForm(request.POST)
+        if form.is_valid():
+            auction=Auction(title=form.cleaned_data['title'],description=form.cleaned_data['description'],starting_bid=form.cleaned_data['starting_bid'],image_url=form.cleaned_data['image_url'] )
+            auction.save()
+            print(auction)
+            return HttpResponseRedirect(reverse("index"))
+
     form=AuctionForm()
     return render(request,"auctions/create.html", {"form":form})
