@@ -68,7 +68,9 @@ def create(request):
     if request.method=="POST":
         form=AuctionForm(request.POST)
         if form.is_valid():
-            auction=Auction(title=form.cleaned_data['title'],description=form.cleaned_data['description'],starting_bid=form.cleaned_data['starting_bid'],image_url=form.cleaned_data['image_url'] )
+            category_name = form.cleaned_data['category']
+            category, created = Category.objects.get_or_create(name=category_name)
+            auction=Auction(title=form.cleaned_data['title'],description=form.cleaned_data['description'],starting_bid=form.cleaned_data['starting_bid'],image_url=form.cleaned_data['image_url'], category=category )
             auction.save()
             print(auction)
             return HttpResponseRedirect(reverse("index"))

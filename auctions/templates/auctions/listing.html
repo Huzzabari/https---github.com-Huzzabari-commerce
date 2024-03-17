@@ -2,7 +2,7 @@
 
 {% block body %}
    
-    <h3>{{auction.title}}</h3>
+    <h2>{{auction.title}}</h2>
     <a href="{% url 'index' %}" class="image_link_anchor">GO BACK</a>
     <p>{{auction.description}}</p>
     <h4>starting bid: ${{auction.starting_bid}}</h4>

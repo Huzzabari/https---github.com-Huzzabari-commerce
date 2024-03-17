@@ -6,9 +6,10 @@
     <br>
     <div>
     <h3><a href="{% url 'listing' auction.pk %}" class="image_link_anchor">{{auction.title}}</a></h3>
+    <h5>{{auction.category}}</h4>
     <p>{{auction.description}}</p>
     <h4>starting bid: ${{auction.starting_bid}}</h4>
-    <img src="{{auction.image_url}}">
+    <img src="{{auction.image_url}}" class="w3-border" style="padding:4px;width:50%">
     </div>
     {% endfor %}
 {% endblock %}

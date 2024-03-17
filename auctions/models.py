@@ -6,7 +6,18 @@ class User(AbstractUser):
     pass
 #Your application should have at least three models in addition to the User model: one for auction listings, one for bids, and one for comments made on auction listings. 
 class Category(models.Model):
-    name = models.CharField(max_length=30)
+    CATEGORY_CHOICES=[  
+    ('Electronics', 'Electronics'),
+    ('Clothing', 'Clothing'),
+    ('Home & Garden', 'Home & Garden'),
+    ('Toys & Games', 'Toys & Games'),
+    ('Books & Magazines', 'Books & Magazines'),
+    ('Sports & Outdoors', 'Sports & Outdoors'),
+    ('Health & Beauty', 'Health & Beauty'),
+    ('Collectibles', 'Collectibles'),
+    ('Automotive', 'Automotive'),
+    ('Miscellaneous', 'Miscellaneous')]
+    name = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
 
     def __str__(self):
         return f"Category:{self.name}"
