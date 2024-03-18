@@ -82,3 +82,8 @@ def listing(request, pk):
     auction=Auction.objects.get(pk=pk)
     return render(request, "auctions/listing.html", {'auction':auction})
 
+def watchlist(request):
+    pass
+
+def categories(request):
+    pass
