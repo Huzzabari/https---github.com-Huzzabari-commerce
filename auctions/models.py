@@ -5,6 +5,8 @@ from django.db import models
 class User(AbstractUser):
     pass
 #Your application should have at least three models in addition to the User model: one for auction listings, one for bids, and one for comments made on auction listings. 
+
+
 class Category(models.Model):
     CATEGORY_CHOICES=[  
     ('Electronics', 'Electronics'),
@@ -24,12 +26,14 @@ class Category(models.Model):
 #auction categories
     
 class Auction(models.Model):
-    title=models.CharField(max_length=30)
-    description=models.CharField(max_length=130)
-    starting_bid=models.PositiveIntegerField()
-    image_url=models.URLField(blank=True)
-    #one to many category
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    title=models.CharField(max_length=30)  #title
+    description=models.CharField(max_length=130)  #description
+    starting_bid=models.PositiveIntegerField()  #starting bid and bid after
+    image_url=models.URLField(blank=True)   #image
+    is_open=models.BooleanField(default=True)   #is the auction open or closed
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True) #category drop down
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)  #links the user to the auction created
+
 
     def __str__(self):
         return f"Title:{self.title}, Description:{self.description}, with a starting bid of {self.starting_bid}, an image url of {self.image_url}, and category:{self.category}"
@@ -53,3 +57,8 @@ class Comments(models.Model):
         return f"Auction:{self.auction} and Comments:{self.comments} from User:{self.user}"
 #comments
 
+
+class UserProfile(models.Model):   #user profile model
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    watchlist=models.ManyToManyField(Auction, blank=True)
+    # your additional fields here
