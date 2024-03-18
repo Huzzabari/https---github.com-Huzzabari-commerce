@@ -32,7 +32,7 @@ class Auction(models.Model):
     image_url=models.URLField(blank=True)   #image
     is_open=models.BooleanField(default=True)   #is the auction open or closed
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True) #category drop down
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)  #links the user to the auction created
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, default=1)  #links the user to the auction created
 
 
     def __str__(self):
