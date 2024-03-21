@@ -5,8 +5,17 @@
     <h2>{{auction.title}}</h2>
     <a href="{% url 'index' %}" class="image_link_anchor">GO BACK</a>
     <p>{{auction.description}}</p>
-    <h4>starting bid: ${{auction.starting_bid}}</h4>
-    <img src="{{auction.image_url}}">
+    <h4>Highest bid: ${{auction.starting_bid}}</h4>
+    <form action="{% url 'listing' auction.id %}" method="post">
+        {% csrf_token %}
+        <img src="{{auction.image_url}}">
+        <br>
+        <br>
+        <h4>{{form}}</h4>
+        <br>
+        <input class="btn btn-primary" type="submit" value="Submit">
+    </form>
+   
     
     
 {% endblock %}

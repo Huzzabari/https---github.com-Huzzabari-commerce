@@ -3,8 +3,8 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .models import User, Category, Auction, Bids, Comments
-from .forms import AuctionForm
+from .models import User, Category, Auction, Bids, Comments, UserProfile
+from .forms import AuctionForm, BidForm
 
 
 def index(request):
@@ -72,15 +72,26 @@ def create(request):
             category, created = Category.objects.get_or_create(name=category_name)
             auction=Auction(title=form.cleaned_data['title'],description=form.cleaned_data['description'],starting_bid=form.cleaned_data['starting_bid'],image_url=form.cleaned_data['image_url'], category=category )
             auction.save()
-            print(auction)
             return HttpResponseRedirect(reverse("index"))
 
     form=AuctionForm()
     return render(request,"auctions/create.html", {"form":form})
 
 def listing(request, pk):
+    if request.method=="POST":
+        form=BidForm(request.POST)
+        if form.is_valid():
+            auction=Auction.objects.get(pk=pk)
+            bid=Bids(auction=form.cleaned_data["auction"], bids=form.cleaned_data["bids"], user=form.cleaned_data["user"])
+            if bid.bids > auction.starting_bid:
+                auction.starting_bid=bid.bids
+                auction.save()
+                bid.save()
+                return HttpResponseRedirect(reverse("index"))
+    user=request.user        
     auction=Auction.objects.get(pk=pk)
-    return render(request, "auctions/listing.html", {'auction':auction})
+    form = BidForm(initial={'auction_id': auction,"user":user})
+    return render(request, "auctions/listing.html", {'auction':auction,"form":form})
 
 def watchlist(request):
     pass
