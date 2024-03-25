@@ -1,10 +1,11 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from .models import User, Category, Auction, Bids, Comments, UserProfile
-from .forms import AuctionForm, BidForm
+from .forms import AuctionForm, BidForm, WatchForm
 import logging
 
 def index(request):
@@ -79,33 +80,41 @@ def create(request):            # post request takes the form data and makes a f
 
 def listing(request, pk):                        # If the listing has a post request it creates a bid form with a csrf token and checks if the form data is valid
     if request.method=="POST":
-        form=BidForm(request.POST)
-        print("Form data:", request.POST)
-        print("Form errors:", form.errors)
+        form=BidForm(request.POST)               # request bid form object.
+        auction=Auction.objects.get(pk=pk)         # get auction object class for the primary key
         if form.is_valid():
-            print("Form errors:", form.errors)
-            print("Form is valid")   #  NOT GETTING THIS
-            auction = Auction.objects.get(pk=form.cleaned_data["auction_id"])
-            user = User.objects.get(pk=form.cleaned_data["user"])
-            bids = Bids(auction=auction, bids=form.cleaned_data["new_bid"], user=user)
-            print("Auction ID:", form.cleaned_data["auction_id"])
-            print("New Bid:", form.cleaned_data["new_bid"])
-            print("User:", form.cleaned_data["user"])
-            #logging.info(bids)
-            #logging.info(auction)
-            if bids.bids >= auction.starting_bid and bids.bids > auction.highest_bid:
-                auction.highest_bid=bids.bids
+            new_bid=form.cleaned_data["new_bid"]                # if the form is valid the new bid field gets the bidform clean data of new bid
+            if new_bid >= auction.starting_bid and new_bid > auction.highest_bid:       # if new bid is higher then save it to the auction form and go back to index.
+                auction.highest_bid=new_bid
                 auction.save()
-                bids.save()
                 return HttpResponseRedirect(reverse("index"))
-        #return HttpResponseRedirect(reverse("index"))
+        
+        user_profile= UserProfile.objects.get(user=request.user)  #get user profile instance
+        watchlist=user_profile.watchlist.all()                # get everything from the users watchlist
+        auction=Auction.objects.get(pk=pk)                        # get the instance of the auction the user is looking at
+        if auction in watchlist:                              # if the auction is in the watchlist during a post request then remove it, otherwise add it.
+            user_profile.watchlist.remove(auction)
+            return HttpResponseRedirect(reverse("index"))
+        user_profile.watchlist.add(auction)
+        return HttpResponseRedirect(reverse("index"))
+    
+    messages.success(request, 'Something went wrong')
+        
+    #GET REQUEST    
     user=request.user                                                   # Otherwise it creates a bid form that has the auction id and user info hidden
-    auction=Auction.objects.get(pk=pk)
-    form = BidForm(initial={'auction_id': auction,"user":user})               
-    return render(request, "auctions/listing.html", {'auction':auction,"form":form})
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        return render(request, "auctions/register.html")
+    watchlist=user_profile.watchlist.all()
+    auction=Auction.objects.get(pk=pk)                                   
+    form = BidForm(initial={'auction_id': auction.id,"user":user.id})               
+    return render(request, "auctions/listing.html", {'auction':auction,"form":form, 'watchlist': watchlist})
 
 def watchlist(request):    #watchlist should be a post request to save the info, and a get request to view a users watchlist
-    pass
+    user_profile= UserProfile.objects.get(user=request.user)
+    watchlist=user_profile.watchlist.all()
+    return render (request, "auctions/watchlist.html", {'watchlist':watchlist})
 
 def categories(request):  #categories page should be a post request and show all the listings of a specific category
     pass

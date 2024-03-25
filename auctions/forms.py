@@ -27,3 +27,7 @@ class BidForm(forms.Form):
     auction_id = forms.IntegerField(widget=forms.HiddenInput())                            # auction id that is hidden and is an int field  
     new_bid=forms.DecimalField()                                                            # new bid the user is putting into the form
     user=forms.IntegerField(widget=forms.HiddenInput())                                    # user id that is hidden
+
+class WatchForm(forms.Form):
+    auction_id = forms.IntegerField(widget=forms.HiddenInput())                            # auction id that is hidden and is an int field                                                            # new bid the user is putting into the form
+    

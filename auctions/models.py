@@ -37,7 +37,7 @@ class Auction(models.Model):
 
 
     def __str__(self):
-        return f"Title:{self.title}, Description:{self.description}, with a starting bid of {self.starting_bid}, a highest bid of {self.highest_bid}, an image url of {self.image_url}, and category:{self.category}"
+        return f"ID: {self.id}, Title:{self.title}, Description:{self.description}, with a starting bid of {self.starting_bid}, a highest bid of {self.highest_bid}, an image url of {self.image_url}, and category:{self.category}"
 #auction listings
 
 class Bids(models.Model):                                                                                       # bid model that includes auction foreign key that links to auction id, bids, and user id
