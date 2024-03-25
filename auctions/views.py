@@ -81,11 +81,18 @@ def listing(request, pk):                        # If the listing has a post req
     if request.method=="POST":
         form=BidForm(request.POST)
         print("Form data:", request.POST)
+        print("Form errors:", form.errors)
         if form.is_valid():
+            print("Form errors:", form.errors)
             print("Form is valid")   #  NOT GETTING THIS
+            auction = Auction.objects.get(pk=form.cleaned_data["auction_id"])
+            user = User.objects.get(pk=form.cleaned_data["user"])
+            bids = Bids(auction=auction, bids=form.cleaned_data["new_bid"], user=user)
             print("Auction ID:", form.cleaned_data["auction_id"])
             print("New Bid:", form.cleaned_data["new_bid"])
             print("User:", form.cleaned_data["user"])
+            #logging.info(bids)
+            #logging.info(auction)
             if bids.bids >= auction.starting_bid and bids.bids > auction.highest_bid:
                 auction.highest_bid=bids.bids
                 auction.save()
