@@ -1,15 +1,16 @@
 {% extends "auctions/layout.html" %}
 
-{% block body %}
+{% block body %}                              
     <h2>Active Listings</h2>
-    {% for auction in auctions%}
+    {% for auction in auctions%}        <!-- loops through auctions -->
     <br>
     <div>
-    <h3><a href="{% url 'listing' auction.pk %}" class="image_link_anchor">{{auction.title}}</a></h3>
-    <h5>{{auction.category}}</h4>
+    <h3><a href="{% url 'listing' auction.pk %}" class="image_link_anchor">{{auction.title}}</a></h3>  <!-- link to the listing -->     
+    <h5>{{auction.category}}</h5>                                                                       <!-- auction category, description, and bid-->
     <p>{{auction.description}}</p>
-    <h4>starting bid: ${{auction.starting_bid}}</h4>
-    <img src="{{auction.image_url}}" class="w3-border" style="padding:4px;width:50%">
+    <h5>starting bid: ${{auction.starting_bid}}</h5>
+    <h5>highest bid: ${{auction.highest_bid}}</h5>                                                                 <!--probably should add recent bid -->
+    <img src="{{auction.image_url}}" class="w3-border" style="padding:4px;width:50%">              <!-- image -->
     </div>
     {% endfor %}
 {% endblock %}

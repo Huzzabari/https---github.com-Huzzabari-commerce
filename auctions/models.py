@@ -7,7 +7,7 @@ class User(AbstractUser):
 #Your application should have at least three models in addition to the User model: one for auction listings, one for bids, and one for comments made on auction listings. 
 
 
-class Category(models.Model):
+class Category(models.Model):                              # category model I add to the auction form
     CATEGORY_CHOICES=[  
     ('Electronics', 'Electronics'),
     ('Clothing', 'Clothing'),
@@ -28,7 +28,8 @@ class Category(models.Model):
 class Auction(models.Model):
     title=models.CharField(max_length=30)  #title
     description=models.CharField(max_length=130)  #description
-    starting_bid=models.PositiveIntegerField()  #starting bid and bid after
+    starting_bid=models.PositiveIntegerField()  #starting bid
+    highest_bid=models.PositiveBigIntegerField(default=0) #highest bid with defaults set to 0, so less thatn starting bid
     image_url=models.URLField(blank=True)   #image
     is_open=models.BooleanField(default=True)   #is the auction open or closed
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True) #category drop down
@@ -36,10 +37,10 @@ class Auction(models.Model):
 
 
     def __str__(self):
-        return f"Title:{self.title}, Description:{self.description}, with a starting bid of {self.starting_bid}, an image url of {self.image_url}, and category:{self.category}"
+        return f"Title:{self.title}, Description:{self.description}, with a starting bid of {self.starting_bid}, a highest bid of {self.highest_bid}, an image url of {self.image_url}, and category:{self.category}"
 #auction listings
 
-class Bids(models.Model):
+class Bids(models.Model):                                                                                       # bid model that includes auction foreign key that links to auction id, bids, and user id
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE)
     bids=models.PositiveIntegerField()
     user=models.ForeignKey(User, on_delete=models.CASCADE)
@@ -48,7 +49,7 @@ class Bids(models.Model):
         return f"Auction:{self.auction} and Bids:{self.bids} from User:{self.user}"
 #bids
     
-class Comments(models.Model):
+class Comments(models.Model):                                                                           # comment model has auction id, comments, and user id
     auction = models.ForeignKey(Auction, on_delete=models.CASCADE)
     comments=models.CharField(max_length=130)
     user=models.ForeignKey(User, on_delete=models.CASCADE)
@@ -58,7 +59,7 @@ class Comments(models.Model):
 #comments
 
 
-class UserProfile(models.Model):   #user profile model
+class UserProfile(models.Model):   #user profile model has the user id and then the watchlist                              
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     watchlist=models.ManyToManyField(Auction, blank=True)
     # your additional fields here

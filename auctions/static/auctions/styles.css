@@ -3,7 +3,7 @@ body {
 }
 
 
-.image_link_anchor{
+.image_link_anchor{            /* Makes images link look better proportioned */
     display: block;
 }
 
