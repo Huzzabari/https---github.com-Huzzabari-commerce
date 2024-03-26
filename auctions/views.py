@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from .models import User, Category, Auction, Bids, Comments, UserProfile
-from .forms import AuctionForm, BidForm, WatchForm
+from .forms import AuctionForm, BidForm, CommentForm
 import logging
 
 def index(request):
@@ -81,15 +81,24 @@ def create(request):            # post request takes the form data and makes a f
     return render(request,"auctions/create.html", {"form":form})
 
 def listing(request, pk):                        # If the listing has a post request it creates a bid form with a csrf token and checks if the form data is valid
-    if request.method=="POST":
-        form=BidForm(request.POST)               # request bid form object.
+    if 'form1' in request.POST:
+        form1=BidForm(request.POST)               # request bid form object.
         auction=Auction.objects.get(pk=pk)         # get auction object class for the primary key
-        if form.is_valid():
-            new_bid=form.cleaned_data["new_bid"]                # if the form is valid the new bid field gets the bidform clean data of new bid
+        if form1.is_valid():
+            new_bid=form1.cleaned_data["new_bid"]                # if the form is valid the new bid field gets the bidform clean data of new bid
             if new_bid >= auction.starting_bid and new_bid > auction.highest_bid:       # if new bid is higher then save it to the auction form and go back to index.
                 auction.highest_bid=new_bid
                 auction.save()
                 return HttpResponseRedirect(reverse("index"))
+            
+    elif 'form2'in request.POST:                                 # made a change to have 2 forms.  form two post does something different.
+        form2=CommentForm(request.POST)
+        if form2.is_valid():                  
+            new_comment=form2.cleaned_data["comments"]
+            user_id = UserProfile.objects.get(user=request.user)
+            comments=Comments.objects.create(auction_id=pk, user_id=user_id, comments=new_comment)
+            print(comments)
+            return HttpResponseRedirect(reverse("listing", args=[pk]))
         
         user_profile= UserProfile.objects.get(user=request.user)  #get user profile instance
         watchlist=user_profile.watchlist.all()                # get everything from the users watchlist
@@ -107,9 +116,11 @@ def listing(request, pk):                        # If the listing has a post req
     except UserProfile.DoesNotExist:
         return render(request, "auctions/register.html")
     watchlist=user_profile.watchlist.all()
-    auction=Auction.objects.get(pk=pk)                                   
-    form = BidForm(initial={'auction_id': auction.id,"user":user.id})               
-    return render(request, "auctions/listing.html", {'auction':auction,"form":form, 'watchlist': watchlist})
+    auction=Auction.objects.get(pk=pk)    
+    comments=Comments.objects.filter(auction_id=pk)                               
+    form1 = BidForm(initial={'auction_id': auction.id,"user":user.id})
+    form2=CommentForm(initial={'auction_id': auction.id,"user":user.id})               
+    return render(request, "auctions/listing.html", {'auction':auction,"form1":form1, "form2":form2, 'watchlist': watchlist, "comments":comments})
 
 def watchlist(request):    #watchlist should be a post request to save the info, and a get request to view a users watchlist
     user_profile= UserProfile.objects.get(user=request.user)

@@ -11,7 +11,7 @@
         <img src="{{auction.image_url}}">                                       <!-- Image and form for the listing bid -->
         <br>
         <br>
-        <h4>{{form}}</h4>
+        <h4>{{form1}}</h4>
         <br>
         <input class="btn btn-primary" type="submit" value="Submit">
     </form>
@@ -27,7 +27,18 @@
         {% endif %}
     </form>
     <br>
-    <h2>Comments:</h2>
     
+    <form action="{% url 'listing' auction.id %}" method="post">                 <!-- submit listing -->
+        {% csrf_token %}                                      <!-- Image and form for the listing bid -->
+        <br>
+        <br>
+        <h4>{{form2}}</h4>
+        <br>
+        <input class="btn btn-primary" type="submit" value="Submit">
+    </form>
+    <h3>COMMENTS:</h3>
+    {% for comment in comments %}
+    {{comment.comments}}
+    {% endfor %}
     
 {% endblock %}
