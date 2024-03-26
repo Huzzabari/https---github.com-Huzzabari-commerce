@@ -16,25 +16,18 @@
         <input class="btn btn-primary" type="submit" value="Submit">
     </form>
    
-    {% messages %}
-    <div class="alert alert-{{ message.tags }}">
-        {{ message }}
-    </div>
-    {% endmessages %}
-
+    <br>
+    <br>
     <form action="{% url 'listing' auction.id %}"   method="post">
         {% csrf_token %}
-        {{ form }}
         {% if auction in watchlist %}
             <input type="submit" value="Remove from Watchlist">
         {% else %}
             <input type="submit" value="Add to Watchlist">
         {% endif %}
     </form>
-
-
+    <br>
     <h2>Comments:</h2>
-    
     
     
 {% endblock %}

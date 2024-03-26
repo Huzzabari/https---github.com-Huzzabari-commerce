@@ -4,7 +4,12 @@
     <h1>My Watchlist: </h1>
 
     {% for watch in watchlist %}
-    <p>{{watch}}</p>
+    <h3><a href="{% url 'listing' watch.pk %}" class="image_link_anchor">{{watch.title}}</a></h3>  <!-- link to the listing -->     
+    <h5>{{watch.category}}</h5>                                                                       <!-- auction category, description, and bid-->
+    <p>{{watch.description}}</p>
+    <h5>starting bid: ${{watch.starting_bid}}</h5>
+    <h5>highest bid: ${{watch.highest_bid}}</h5>                                                                 <!--probably should add recent bid -->
+    <img src="{{watch.image_url}}" class="w3-border" style="padding:4px;width:50%">              <!-- image -->
     {% endfor %}
 
     

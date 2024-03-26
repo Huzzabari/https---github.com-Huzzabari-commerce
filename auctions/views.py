@@ -55,6 +55,8 @@ def register(request):
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
+            userprof=UserProfile.objects.create(user=user)
+            userprof.save()
         except IntegrityError:
             return render(request, "auctions/register.html", {
                 "message": "Username already taken."
@@ -97,8 +99,6 @@ def listing(request, pk):                        # If the listing has a post req
             return HttpResponseRedirect(reverse("index"))
         user_profile.watchlist.add(auction)
         return HttpResponseRedirect(reverse("index"))
-    
-    messages.success(request, 'Something went wrong')
         
     #GET REQUEST    
     user=request.user                                                   # Otherwise it creates a bid form that has the auction id and user info hidden
