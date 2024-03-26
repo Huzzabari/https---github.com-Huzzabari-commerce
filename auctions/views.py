@@ -117,4 +117,11 @@ def watchlist(request):    #watchlist should be a post request to save the info,
     return render (request, "auctions/watchlist.html", {'watchlist':watchlist})
 
 def categories(request):  #categories page should be a post request and show all the listings of a specific category
-    pass
+    category=Category.objects.all()
+    return render(request, "auctions/categories.html", {'categories': category})
+
+def category(request, category_name):
+    category=Category.objects.get(name=category_name)
+    auctions=Auction.objects.filter(category=category)
+    return render(request, "auctions/category.html", {'category': category, 'auctions': auctions})
+ 

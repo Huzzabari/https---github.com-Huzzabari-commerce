@@ -11,6 +11,7 @@ urlpatterns = [
     path("create", views.create, name="create"),   #create listing
     path("listing/<int:pk>/", views.listing, name="listing"), #listing page
     path("categories", views.categories,name="categories" ), #categories
+    path("category/<str:category_name>", views.category,name="category" ), #category
     path("watchlist", views.watchlist, name="watchlist") #watchlist
    
 ]
