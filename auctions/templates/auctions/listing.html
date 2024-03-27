@@ -5,6 +5,7 @@
     <h2>{{auction.title}}</h2>                                              <!-- title -->
     <a href="{% url 'index' %}" class="image_link_anchor">GO BACK</a>       <!-- link to go back to index page -->
     <p>{{auction.description}}</p>                                          <!-- description of the auction and highest bid-->
+    <h5>Starting bid: ${{auction.starting_bid}}</h5>  
     <h5>Highest bid: ${{auction.highest_bid}}</h5>                                                  
     <form action="{% url 'listing' auction.id %}" method="post">                 <!-- submit listing -->
         {% csrf_token %}
