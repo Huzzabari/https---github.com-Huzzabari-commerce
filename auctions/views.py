@@ -83,7 +83,20 @@ def create(request):            # post request takes the form data and makes a f
 
 def listing(request, pk):
     print("Request method:", request.method)  # Check the request method
-    if request.method == "POST":
+    if request.method == "GET":
+        user=request.user                                                   # Otherwise it creates a bid form that has the auction id and user info hidden
+        try:
+            user_profile = UserProfile.objects.get(user=request.user)
+        except UserProfile.DoesNotExist:
+            return render(request, "auctions/register.html")
+        watchlist=user_profile.watchlist.all()
+        auction=Auction.objects.get(pk=pk)    
+        comments=Comments.objects.filter(auction_id=pk)                               
+        form1 = BidForm(initial={'auction_id': auction.id,"user":user.id})
+        form2=CommentForm(initial={'auction_id': auction.id,"user":user.id})               
+        return render(request, "auctions/listing.html", {'auction':auction,"form1":form1, "form2":form2, 'watchlist': watchlist, "comments":comments})
+
+    elif request.method=="POST":
         if 'form1' in request.POST:
             print("Form1 submitted")  # Check if this block is being entered
             form1 = BidForm(request.POST)
@@ -108,12 +121,14 @@ def listing(request, pk):
             form2=CommentForm(request.POST)
             if form2.is_valid():                  
                 new_comment=form2.cleaned_data["comments"]
-                user_id = UserProfile.objects.get(user=request.user)
+                user_id = UserProfile.objects.get(user=request.user).id
                 comments=Comments.objects.create(auction_id=pk, user_id=user_id, comments=new_comment)
                 print(comments)
                 return HttpResponseRedirect(reverse("listing", args=[pk]))
             
+        elif 'watchlist' in request.POST:   
             user_profile= UserProfile.objects.get(user=request.user)  #get user profile instance
+            user_id = user_profile.id  # get user profile id
             watchlist=user_profile.watchlist.all()                # get everything from the users watchlist
             auction=Auction.objects.get(pk=pk)                        # get the instance of the auction the user is looking at
             if auction in watchlist:                              # if the auction is in the watchlist during a post request then remove it, otherwise add it.
@@ -121,19 +136,8 @@ def listing(request, pk):
                 return HttpResponseRedirect(reverse("index"))
             user_profile.watchlist.add(auction)
             return HttpResponseRedirect(reverse("index"))
-            
-    #GET REQUEST    
-    user=request.user                                                   # Otherwise it creates a bid form that has the auction id and user info hidden
-    try:
-        user_profile = UserProfile.objects.get(user=request.user)
-    except UserProfile.DoesNotExist:
-        return render(request, "auctions/register.html")
-    watchlist=user_profile.watchlist.all()
-    auction=Auction.objects.get(pk=pk)    
-    comments=Comments.objects.filter(auction_id=pk)                               
-    form1 = BidForm(initial={'auction_id': auction.id,"user":user.id})
-    form2=CommentForm(initial={'auction_id': auction.id,"user":user.id})               
-    return render(request, "auctions/listing.html", {'auction':auction,"form1":form1, "form2":form2, 'watchlist': watchlist, "comments":comments})
+    return HttpResponse("Invalid request")        
+  
 
 
 def handle_form1(request, pk):

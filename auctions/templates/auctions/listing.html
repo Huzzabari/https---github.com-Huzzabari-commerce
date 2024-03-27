@@ -14,7 +14,7 @@
         <br>
         <h4>{{form1}}</h4>
         <br>
-        <input class="btn btn-primary" type="submit" value="Submit">
+        <input class="btn btn-primary" name="form1" type="submit" value="Submit">
     </form>
    
     <br>
@@ -22,9 +22,9 @@
     <form action="{% url 'listing' auction.id %}"   method="post">
         {% csrf_token %}
         {% if auction in watchlist %}
-            <input type="submit" value="Remove from Watchlist">
+            <input type="submit" name="watchlist" value="Remove from Watchlist">
         {% else %}
-            <input type="submit" value="Add to Watchlist">
+            <input type="submit" name="watchlist" value="Add to Watchlist">
         {% endif %}
     </form>
     <br>
@@ -35,11 +35,11 @@
         <br>
         <h4>{{form2}}</h4>
         <br>
-        <input class="btn btn-primary" type="submit" value="Submit">
+        <input class="btn btn-primary" name="form2" type="submit" value="Submit">
     </form>
     <h3>COMMENTS:</h3>
     {% for comment in comments %}
-    {{comment.comments}}
+    <p>{{comment.comments}}</p>
     {% endfor %}
     
 {% endblock %}
