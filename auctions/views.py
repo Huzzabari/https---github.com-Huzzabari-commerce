@@ -73,7 +73,7 @@ def create(request):            # post request takes the form data and makes a f
         if form.is_valid():
             category_name = form.cleaned_data['category']
             category, created = Category.objects.get_or_create(name=category_name)
-            auction=Auction(title=form.cleaned_data['title'],description=form.cleaned_data['description'],starting_bid=form.cleaned_data['starting_bid'],image_url=form.cleaned_data['image_url'], category=category )
+            auction=Auction(title=form.cleaned_data['title'],description=form.cleaned_data['description'],starting_bid=form.cleaned_data['starting_bid'],image_url=form.cleaned_data['image_url'], category=category, creator=request.user )
             auction.save()
             return HttpResponseRedirect(reverse("index"))
 
@@ -93,29 +93,28 @@ def listing(request, pk):
         auction=Auction.objects.get(pk=pk)    
         comments=Comments.objects.filter(auction_id=pk)                               
         form1 = BidForm(initial={'auction_id': auction.id,"user":user.id})
-        form2=CommentForm(initial={'auction_id': auction.id,"user":user.id})               
-        return render(request, "auctions/listing.html", {'auction':auction,"form1":form1, "form2":form2, 'watchlist': watchlist, "comments":comments})
+        form2=CommentForm(initial={'auction_id': auction.id,"user":user.id}) 
+        print("user:", user)
+        print("creator:", auction.creator)              
+        return render(request, "auctions/listing.html", {'auction':auction,"form1":form1, "form2":form2, 'watchlist': watchlist, "comments":comments, "creator": auction.creator, "user":user})
 
     elif request.method=="POST":
         if 'form1' in request.POST:
-            print("Form1 submitted")  # Check if this block is being entered
             form1 = BidForm(request.POST)
             auction = Auction.objects.get(pk=pk)
             if form1.is_valid():
                 new_bid = form1.cleaned_data["new_bid"]
-                print("New bid:", new_bid)
-                print("Starting bid:", auction.starting_bid)
-                print("Current highest bid:", auction.highest_bid)
                 if new_bid >= auction.starting_bid and new_bid > auction.highest_bid:
                     auction.highest_bid = new_bid
                     auction.save()
-                    print("Highest bid updated successfully")
                     return HttpResponseRedirect(reverse("index"))
                 else:
-                    print("Bid is not higher than starting bid or current highest bid")
-                    print(form1.errors)
+                    return HttpResponseRedirect(reverse("index"))
+                    
+                    
             else:
                 print("Form is not valid")
+                messages.add_message(request, messages.INFO, "Hello world.")
                 
         elif 'form2'in request.POST:                                 # made a change to have 2 forms.  form two post does something different.
             form2=CommentForm(request.POST)
@@ -123,7 +122,6 @@ def listing(request, pk):
                 new_comment=form2.cleaned_data["comments"]
                 user_id = UserProfile.objects.get(user=request.user).id
                 comments=Comments.objects.create(auction_id=pk, user_id=user_id, comments=new_comment)
-                print(comments)
                 return HttpResponseRedirect(reverse("listing", args=[pk]))
             
         elif 'watchlist' in request.POST:   
@@ -133,22 +131,17 @@ def listing(request, pk):
             auction=Auction.objects.get(pk=pk)                        # get the instance of the auction the user is looking at
             if auction in watchlist:                              # if the auction is in the watchlist during a post request then remove it, otherwise add it.
                 user_profile.watchlist.remove(auction)
-                return HttpResponseRedirect(reverse("index"))
+                return HttpResponseRedirect(reverse('watchlist'))
             user_profile.watchlist.add(auction)
-            return HttpResponseRedirect(reverse("index"))
-    return HttpResponse("Invalid request")        
+            return HttpResponseRedirect(reverse('watchlist'))
+        
+        elif 'close' in request.POST:
+            auction=Auction.objects.get(pk=pk)
+            auction.is_open=False
+            auction.save()
+
+    return HttpResponse("Something went wrong")        
   
-
-
-def handle_form1(request, pk):
-    pass
-
-def handle_form2(request, pk):
-    pass
-
-def handle_watchlist(request,pk):
-    pass
-
 
 def watchlist(request):    #watchlist should be a post request to save the info, and a get request to view a users watchlist
     user_profile= UserProfile.objects.get(user=request.user)

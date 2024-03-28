@@ -1,7 +1,15 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-   
+    {% if user == auction.creator %}         <!-- need to fix this -->
+    <br>
+    <form action="{% url 'listing' auction.id %}"   method="post">
+        {% csrf_token %}
+            <input type="submit" name="close" value="Close Auction">
+    </form>
+    <br>
+    {% endif %}
+
     <h2>{{auction.title}}</h2>                                              <!-- title -->
     <a href="{% url 'index' %}" class="image_link_anchor">GO BACK</a>       <!-- link to go back to index page -->
     <p>{{auction.description}}</p>                                          <!-- description of the auction and highest bid-->

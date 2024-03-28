@@ -12,9 +12,6 @@ urlpatterns = [
     path("listing/<int:pk>/", views.listing, name="listing"), #listing page
     path("categories", views.categories,name="categories" ), #categories
     path("category/<str:category_name>/", views.category,name="category" ), #category
-    path('handle_form1/<int:pk>/', views.handle_form1, name='handle_form1'),
-    path('handle_form2/<int:pk>/', views.handle_form2, name='handle_form2'),
-    path('handle_watchlist/<int:pk>/', views.handle_watchlist, name='handle_watchlist'),
     path("watchlist", views.watchlist, name="watchlist"), #watchlist
    
 ]
