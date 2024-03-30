@@ -146,7 +146,8 @@ def listing(request, pk):
                 auction.save()
                 return HttpResponseRedirect(reverse("index"))
             else:               
-                return HttpResponse("Something went wrong")
+                messages.warning(request, 'NO ONE HAS BID YET') 
+                return HttpResponseRedirect(reverse("listing", args=[pk]))
     return HttpResponse("Something went wrong")        
   
 
