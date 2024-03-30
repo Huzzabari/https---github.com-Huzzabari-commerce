@@ -105,7 +105,7 @@ def listing(request, pk):
                     auction.highest_bid = new_bid
                     auction.winner= request.user
                     auction.save()
-                    return HttpResponseRedirect(reverse("index"))
+                    return HttpResponseRedirect(reverse("listing", args=[pk]))
                 else:
                     return HttpResponseRedirect(reverse("index")) 
             else:
