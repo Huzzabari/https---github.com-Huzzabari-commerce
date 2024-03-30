@@ -4,12 +4,12 @@
 
     <h2>Create Auction</h2>
 
-
+    <div class=form-group>
     <form action="{% url 'create' %}" method="post">           <!-- create post submission form that has a csrf token -->
         {% csrf_token %}
         {{form}}
         <input class="btn btn-primary" type="submit" value="Submit">
     </form>
-
+    </div>
 
 {% endblock %}

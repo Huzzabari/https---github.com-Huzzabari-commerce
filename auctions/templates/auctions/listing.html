@@ -10,23 +10,10 @@
     </form>
     <br>
     {% endif %}
-
-    <h2>{{auction.title}}</h2>                                              <!-- title -->
+    
+    <h1>{{auction.title}}</h1>                                              <!-- title -->
     <a href="{% url 'index' %}" class="image_link_anchor">GO BACK</a>       <!-- link to go back to index page -->
-    <p>{{auction.description}}</p>                                          <!-- description of the auction and highest bid-->
-    <h5>Starting bid: ${{auction.starting_bid}}</h5>  
-    <h5>Highest bid: ${{auction.highest_bid}}</h5>                                                  
-    <form action="{% url 'listing' auction.id %}" method="post">                 <!-- submit listing -->
-        {% csrf_token %}
-        <img src="{{auction.image_url}}">                                       <!-- Image and form for the listing bid -->
-        <br>
-        <br>
-        <h4>{{form1}}</h4>
-        <br>
-        <input class="btn btn-primary" name="form1" type="submit" value="Submit">
-    </form>
-   
-    <br>
+    <p>{{auction.description}}</p>
     <br>
     <form action="{% url 'listing' auction.id %}"   method="post">
         {% csrf_token %}
@@ -36,14 +23,27 @@
             <input type="submit" name="watchlist" value="Add to Watchlist">
         {% endif %}
     </form>
+    <br>                                          <!-- description of the auction and highest bid-->
+    <h5>Starting bid: ${{auction.starting_bid}}</h5>  
+    <h5>Highest bid: ${{auction.highest_bid}}</h5>                                                  
+    <form action="{% url 'listing' auction.id %}" method="post">                 <!-- submit listing -->
+        {% csrf_token %}
+        <img src="{{auction.image_url}}">                                       <!-- Image and form for the listing bid -->
+        <br>
+        <br>
+        <h4>{{form1}}</h4>
+        <input class="btn btn-primary" name="form1" type="submit" value="Submit">
+    </form>
+   
     <br>
+    <br>
+   
     
     <form action="{% url 'listing' auction.id %}" method="post">                 <!-- submit listing -->
         {% csrf_token %}                                      <!-- Image and form for the listing bid -->
-        <br>
-        <br>
+        
         <h4>{{form2}}</h4>
-        <br>
+        
         <input class="btn btn-primary" name="form2" type="submit" value="Submit">
     </form>
 {% endif %}
@@ -60,6 +60,8 @@
 <h5>Starting bid: ${{auction.starting_bid}}</h5>  
 <h5>Highest bid: ${{auction.highest_bid}}</h5>       
 {% endif %}
+<br>
+<br>
     <h3>COMMENTS:</h3>
     {% for comment in comments %}
     <p>{{comment.comments}}</p>
