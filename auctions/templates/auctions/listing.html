@@ -1,7 +1,8 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    {% if user == auction.creator %}         <!-- need to fix this -->
+{% if is_open %}
+    {% if user == creator %}         <!-- need to fix this -->
     <br>
     <form action="{% url 'listing' auction.id %}"   method="post">
         {% csrf_token %}
@@ -45,6 +46,20 @@
         <br>
         <input class="btn btn-primary" name="form2" type="submit" value="Submit">
     </form>
+{% endif %}
+
+{% if not is_open %}
+<h1>THE AUCTION IS CLOSED. </h1>
+{% if user == auction.winner %}
+<p> {{user.username}} is the winner!</p>
+{% endif %}
+<h2>{{auction.title}}</h2>                                              <!-- title -->
+<a href="{% url 'index' %}" class="image_link_anchor">GO BACK</a>       <!-- link to go back to index page -->
+<img src="{{auction.image_url}}">
+<p>{{auction.description}}</p>                                          <!-- description of the auction and highest bid-->
+<h5>Starting bid: ${{auction.starting_bid}}</h5>  
+<h5>Highest bid: ${{auction.highest_bid}}</h5>       
+{% endif %}
     <h3>COMMENTS:</h3>
     {% for comment in comments %}
     <p>{{comment.comments}}</p>

@@ -82,43 +82,39 @@ def create(request):            # post request takes the form data and makes a f
 
 
 def listing(request, pk):
-    print("Request method:", request.method)  # Check the request method
     if request.method == "GET":
         user=request.user                                                   # Otherwise it creates a bid form that has the auction id and user info hidden
         try:
-            user_profile = UserProfile.objects.get(user=request.user)
+            user_profile = UserProfile.objects.get(user=request.user)     # try for the userprofile
         except UserProfile.DoesNotExist:
             return render(request, "auctions/register.html")
-        watchlist=user_profile.watchlist.all()
+        watchlist=user_profile.watchlist.all()              # get watchlist of user and the auction object and comment object
         auction=Auction.objects.get(pk=pk)    
         comments=Comments.objects.filter(auction_id=pk)                               
-        form1 = BidForm(initial={'auction_id': auction.id,"user":user.id})
-        form2=CommentForm(initial={'auction_id': auction.id,"user":user.id}) 
-        print("user:", user)
-        print("creator:", auction.creator)              
-        return render(request, "auctions/listing.html", {'auction':auction,"form1":form1, "form2":form2, 'watchlist': watchlist, "comments":comments, "creator": auction.creator, "user":user})
-
+        form1 = BidForm(initial={'auction_id': auction.id,"user":user.id})     # create a bid and comment form
+        form2=CommentForm(initial={'auction_id': auction.id,"user":user.id})             
+        return render(request, "auctions/listing.html", {'auction':auction,"form1":form1, "form2":form2, 'watchlist': watchlist, "comments":comments, "creator": auction.creator, "user":user, "is_open": auction.is_open, "winner":auction.winner}) 
+                # Inclued auction, form1, form2, watchlist, comments, creator of the auciton, and user
     elif request.method=="POST":
         if 'form1' in request.POST:
             form1 = BidForm(request.POST)
-            auction = Auction.objects.get(pk=pk)
+            auction = Auction.objects.get(pk=pk)                    # gets a bidform post requestion and saves the info in form 1
             if form1.is_valid():
-                new_bid = form1.cleaned_data["new_bid"]
+                new_bid = form1.cleaned_data["new_bid"]              # if the form is valid clean the new_bid data and if the bid is higher than the starting and highest bid, then it becomes the highest bid.
                 if new_bid >= auction.starting_bid and new_bid > auction.highest_bid:
                     auction.highest_bid = new_bid
+                    auction.winner= request.user
                     auction.save()
                     return HttpResponseRedirect(reverse("index"))
                 else:
-                    return HttpResponseRedirect(reverse("index"))
-                    
-                    
+                    return HttpResponseRedirect(reverse("index")) 
             else:
                 print("Form is not valid")
                 messages.add_message(request, messages.INFO, "Hello world.")
                 
         elif 'form2'in request.POST:                                 # made a change to have 2 forms.  form two post does something different.
             form2=CommentForm(request.POST)
-            if form2.is_valid():                  
+            if form2.is_valid():                                         # form for submitting comments
                 new_comment=form2.cleaned_data["comments"]
                 user_id = UserProfile.objects.get(user=request.user).id
                 comments=Comments.objects.create(auction_id=pk, user_id=user_id, comments=new_comment)
@@ -135,11 +131,13 @@ def listing(request, pk):
             user_profile.watchlist.add(auction)
             return HttpResponseRedirect(reverse('watchlist'))
         
-        elif 'close' in request.POST:
+        elif 'close' in request.POST:                           # If the post request is close, then we plan to close the auction and name a user the winner.
             auction=Auction.objects.get(pk=pk)
             auction.is_open=False
+            print(auction.is_open)
+            print(auction)
             auction.save()
-
+            return HttpResponseRedirect(reverse("index"))
     return HttpResponse("Something went wrong")        
   
 
