@@ -25,7 +25,12 @@
     </form>
     <br>                                          <!-- description of the auction and highest bid-->
     <h5>Starting bid: ${{auction.starting_bid}}</h5>  
-    <h5>Highest bid: ${{auction.highest_bid}}</h5>                                                  
+    <h5>Highest bid: ${{auction.highest_bid}}</h5>   
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}                                              
     <form action="{% url 'listing' auction.id %}" method="post">                 <!-- submit listing -->
         {% csrf_token %}
         <img src="{{auction.image_url}}">                                       <!-- Image and form for the listing bid -->
@@ -50,7 +55,7 @@
 
 {% if not is_open %}
 <h1>THE AUCTION IS CLOSED. </h1>
-{% if user == auction.winner %}
+{% if user.id == auction.winner.id %}
 <p> {{user.username}} is the winner!</p>
 {% endif %}
 <h2>{{auction.title}}</h2>                                              <!-- title -->

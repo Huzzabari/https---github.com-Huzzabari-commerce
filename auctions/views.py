@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Max
 from django.contrib import messages
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
@@ -105,12 +106,14 @@ def listing(request, pk):
                     auction.highest_bid = new_bid
                     auction.winner= request.user
                     auction.save()
+                    bid = Bids(auction=auction, bids=new_bid, user=request.user)
+                    bid.save()
                     return HttpResponseRedirect(reverse("listing", args=[pk]))
                 else:
-                    return HttpResponseRedirect(reverse("index")) 
+                    messages.warning(request, 'BID NOT HIGH ENOUGH') 
+                    return HttpResponseRedirect(reverse("listing", args=[pk]))
             else:
                 print("Form is not valid")
-                messages.add_message(request, messages.INFO, "Hello world.")
                 
         elif 'form2'in request.POST:                                 # made a change to have 2 forms.  form two post does something different.
             form2=CommentForm(request.POST)
@@ -134,10 +137,16 @@ def listing(request, pk):
         elif 'close' in request.POST:                           # If the post request is close, then we plan to close the auction and name a user the winner.
             auction=Auction.objects.get(pk=pk)
             auction.is_open=False
-            print(auction.is_open)
-            print(auction)
-            auction.save()
-            return HttpResponseRedirect(reverse("index"))
+            bids=Bids.objects.filter(auction=auction)   #FIX
+            max_bid_dict=bids.aggregate(Max('bids'))
+            max = max_bid_dict['bids__max']
+            if max is not None:
+                bid_obj = Bids.objects.get(bids=max)
+                auction.winner = bid_obj.user
+                auction.save()
+                return HttpResponseRedirect(reverse("index"))
+            else:               
+                return HttpResponse("Something went wrong")
     return HttpResponse("Something went wrong")        
   
 

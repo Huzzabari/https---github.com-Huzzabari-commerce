@@ -4,7 +4,7 @@ class AuctionForm(forms.Form):                                                  
     title=forms.CharField(label='Title', max_length=30)
     description=forms.CharField(label='Description', max_length=130, widget=forms.Textarea)             # description that is turned into a textarea for the user
     starting_bid=forms.DecimalField()                                                                   # starting bid
-    image_url=forms.CharField(label='Image url', max_length=500)                                        # image_url
+    image_url=forms.CharField(label='Image url', max_length=5000)                                        # image_url
     category=forms.ChoiceField(choices=[                                                                # choice of categories
     ('Electronics', 'Electronics'),                                
     ('Clothing', 'Clothing'),
