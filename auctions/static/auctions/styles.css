@@ -1,48 +1,48 @@
 body {
     padding: 10px;
-    background-color: rgba(40, 19, 19, 0.25); /* or any other shade of off-white you prefer */
+    background-color: rgba(40, 19, 19, 0.25); 
 }
 
 
-.image_link_anchor{            /* Makes images link look better proportioned */
+.image_link_anchor{            
     display: block;
 }
 
 #top {
-    background-color: rgba(7, 143, 34, 0.5); /* or any other shade of off-white you prefer */
+    background-color: rgba(7, 143, 34, 0.5); 
 }
 
 h1 {
    
-        font-size: 58px; /* Adjust the font size as needed */
-        font-weight: bold; /* Make the text bold */
-        color: #333; /* Set the text color */
+        font-size: 58px; 
+        font-weight: bold; 
+        color: #333; 
     } 
 
 
 h2 
 {
-    font-size: 48px; /* Adjust the font size as needed */
-    font-weight: bold; /* Make the text bold */
-    color: #333; /* Set the text color */
+    font-size: 48px; 
+    font-weight: bold; 
+    color: #333; 
 }
     .nav-link {
-        color: #080e14; /* Change link color to blue */
+        color: #080e14; 
     }
     
     .nav-link:hover {
-        color: #0056b3; /* Change link color on hover */
+        color: #0056b3; 
     }
 
     .image_link_anchor{
-        color: #080e14; /* Change link color to blue */
+        color: #080e14; 
     }
     .image_link_anchor:hover {
-        color: #00b351; /* Change link color on hover */
+        color: #00b351;
     }
 
 p {
-    font-size: 24px; /* Adjust the font size as needed */
+    font-size: 24px; 
     
 
 }
