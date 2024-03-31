@@ -5,7 +5,7 @@
     {% for auction in auctions%}        <!-- loops through auctions -->
     <br>
     <div>
-    <h3><a href="{% url 'listing' auction.pk %}" class="image_link_anchor">{{auction.title}}</a></h3>  <!-- link to the listing -->     
+    <h2><a href="{% url 'listing' auction.pk %}" class="image_link_anchor">{{auction.title}}</a></h2>  <!-- link to the listing -->     
     <h5>{{auction.category}}</h5>                                                                       <!-- auction category, description, and bid-->
     <p>{{auction.description}}</p>
     <h5>starting bid: ${{auction.starting_bid}}</h5>

@@ -85,9 +85,10 @@ def create(request):            # post request takes the form data and makes a f
 def listing(request, pk):
     if request.method == "GET":
         user=request.user                                                   # Otherwise it creates a bid form that has the auction id and user info hidden
-        try:
-            user_profile = UserProfile.objects.get(user=request.user)     # try for the userprofile
-        except UserProfile.DoesNotExist:
+        if request.user.is_authenticated:
+            user_profile = UserProfile.objects.get(user=request.user)
+        else:
+            messages.warning(request, 'Please Register an account')
             return render(request, "auctions/register.html")
         watchlist=user_profile.watchlist.all()              # get watchlist of user and the auction object and comment object
         auction=Auction.objects.get(pk=pk)    
@@ -95,7 +96,7 @@ def listing(request, pk):
         form1 = BidForm(initial={'auction_id': auction.id,"user":user.id})     # create a bid and comment form
         form2=CommentForm(initial={'auction_id': auction.id,"user":user.id})             
         return render(request, "auctions/listing.html", {'auction':auction,"form1":form1, "form2":form2, 'watchlist': watchlist, "comments":comments, "creator": auction.creator, "user":user, "is_open": auction.is_open, "winner":auction.winner}) 
-                # Inclued auction, form1, form2, watchlist, comments, creator of the auciton, and user
+                # Include auction, form1, form2, watchlist, comments, creator of the auciton, and user
     elif request.method=="POST":
         if 'form1' in request.POST:
             form1 = BidForm(request.POST)
@@ -104,9 +105,9 @@ def listing(request, pk):
                 new_bid = form1.cleaned_data["new_bid"]              # if the form is valid clean the new_bid data and if the bid is higher than the starting and highest bid, then it becomes the highest bid.
                 if new_bid >= auction.starting_bid and new_bid > auction.highest_bid:
                     auction.highest_bid = new_bid
-                    auction.winner= request.user
+                    auction.winner= request.user                               # make the auction winner the current user who did this bid.
                     auction.save()
-                    bid = Bids(auction=auction, bids=new_bid, user=request.user)
+                    bid = Bids(auction=auction, bids=new_bid, user=request.user)           # save this bid by importing the Bids model and creating an instance.  save the auction, new bid, and user
                     bid.save()
                     return HttpResponseRedirect(reverse("listing", args=[pk]))
                 else:
@@ -136,17 +137,18 @@ def listing(request, pk):
         
         elif 'close' in request.POST:                           # If the post request is close, then we plan to close the auction and name a user the winner.
             auction=Auction.objects.get(pk=pk)
-            auction.is_open=False
-            bids=Bids.objects.filter(auction=auction)   #FIX
-            max_bid_dict=bids.aggregate(Max('bids'))
-            max = max_bid_dict['bids__max']
+            auction.is_open=False                                       # so the auction is no longer open
+            bids=Bids.objects.filter(auction=auction)                   # make an instance of bid fromt he bid object that is tied to the auction the user is viewing
+            max_bid_dict=bids.aggregate(Max('bids'))                    # find the maximum bid of the auction
+            max = max_bid_dict['bids__max']                              # max bid was in a dictionary.  so now it's just the max bid
             if max is not None:
-                bid_obj = Bids.objects.get(bids=max)
-                auction.winner = bid_obj.user
+                bid_obj = Bids.objects.get(bids=max)                       # If the max bid isn't none, then get the bid object tied to that max
+                auction.winner = bid_obj.user                               # make the winner of the auction the user of that bid object and save the auction
                 auction.save()
                 return HttpResponseRedirect(reverse("index"))
             else:               
-                messages.warning(request, 'NO ONE HAS BID YET') 
+                messages.warning(request, 'NO ONE HAS BID YET')
+                auction.is_open=True 
                 return HttpResponseRedirect(reverse("listing", args=[pk]))
     return HttpResponse("Something went wrong")        
   
