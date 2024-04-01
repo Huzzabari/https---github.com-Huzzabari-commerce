@@ -1,6 +1,6 @@
 body {
     padding: 10px;
-    background-color: rgba(40, 19, 19, 0.25); 
+    background-color: rgba(19, 182, 54, 0.196); 
 }
 
 
@@ -24,7 +24,7 @@ h2
 {
     font-size: 48px; 
     font-weight: bold; 
-    color: #333; 
+    color: #0c5e31; 
 }
     .nav-link {
         color: #080e14; 
@@ -46,3 +46,4 @@ p {
     
 
 }
+
