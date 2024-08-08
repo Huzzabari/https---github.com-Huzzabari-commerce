@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import User, Category, Auction, Bids, Comments 
+from .models import User, Category, Auction, Bids, Comments
+
 # Register your models here.
 
 admin.site.register(User)
